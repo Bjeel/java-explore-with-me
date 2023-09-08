@@ -1,11 +1,6 @@
 package ru.practicum.stats_server.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
@@ -19,25 +14,24 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "stats", schema = "public")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Stats {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Column(name = "app_name", nullable = false)
-    String app;
+  @Column(name = "app_name", nullable = false)
+  String app;
 
-    @Column(nullable = false)
-    String uri;
+  @Column(nullable = false)
+  String uri;
 
-    @Column(name = "user_ip", nullable = false, length = 15)
-    String ip;
+  @Column(name = "user_ip", nullable = false, length = 15)
+  String ip;
 
-    @Column(name = "created", nullable = false)
-    LocalDateTime timestamp;
+  @Column(name = "created", nullable = false)
+  LocalDateTime timestamp;
 }

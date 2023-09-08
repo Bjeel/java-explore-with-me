@@ -19,42 +19,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class StatsFullContextTest {
-    private final StatsController statsController;
-    private final StatsService statsService;
+  private final StatsController statsController;
+  private final StatsService statsService;
 
-    private final EndpointHit endpointHit = EndpointHit.builder()
-            .app("test APP")
-            .uri("/test/uri/1")
-            .ip("127.0.0.1")
-            .timestamp("2020-05-05 10:00:00")
-            .build();
+  private final EndpointHit endpointHit = EndpointHit.builder()
+    .app("test APP")
+    .uri("/test/uri/1")
+    .ip("127.0.0.1")
+    .timestamp("2020-05-05 10:00:00")
+    .build();
 
-    @Test
-    public void shouldAddHitAndGetStats() {
-        List<ViewStats> statsFromService = statsService.getStats(
-                LocalDateTime.of(2020, 1, 1, 0, 0, 0),
-                LocalDateTime.of(2021, 1, 1, 0, 0, 0),
-                null,
-                false
-        );
+  @Test
+  public void shouldAddHitAndGetStats() {
+    List<ViewStats> statsFromService = statsService.getStats(
+      LocalDateTime.of(2020, 1, 1, 0, 0, 0),
+      LocalDateTime.of(2021, 1, 1, 0, 0, 0),
+      null,
+      false
+    );
 
-        assertEquals(0, statsFromService.size());
+    assertEquals(0, statsFromService.size());
 
-        statsController.addHit(endpointHit);
+    statsController.addHit(endpointHit);
 
-        statsFromService = statsService.getStats(
-                LocalDateTime.of(2020, 1, 1, 0, 0, 0),
-                LocalDateTime.of(2021, 1, 1, 0, 0, 0),
-                null,
-                false
-        );
+    statsFromService = statsService.getStats(
+      LocalDateTime.of(2020, 1, 1, 0, 0, 0),
+      LocalDateTime.of(2021, 1, 1, 0, 0, 0),
+      null,
+      false
+    );
 
-        assertEquals(1, statsFromService.size());
+    assertEquals(1, statsFromService.size());
 
-        ViewStats statsFromService1 = statsFromService.get(0);
+    ViewStats statsFromService1 = statsFromService.get(0);
 
-        assertEquals(endpointHit.getApp(), statsFromService1.getApp());
-        assertEquals(endpointHit.getUri(), statsFromService1.getUri());
-        assertEquals(1, statsFromService1.getHits());
-    }
+    assertEquals(endpointHit.getApp(), statsFromService1.getApp());
+    assertEquals(endpointHit.getUri(), statsFromService1.getUri());
+    assertEquals(1, statsFromService1.getHits());
+  }
 }
