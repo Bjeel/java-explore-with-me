@@ -8,6 +8,7 @@ import ru.practicum.stats_common.CommonUtils;
 import ru.practicum.stats_common.model.EndpointHit;
 import ru.practicum.stats_common.model.ViewStats;
 import ru.practicum.stats_server.mapper.StatsMapper;
+import ru.practicum.stats_server.model.Stats;
 import ru.practicum.stats_server.repository.StatsRepository;
 
 import java.time.LocalDateTime;
@@ -23,11 +24,13 @@ public class StatsServiceImpl implements StatsService {
 
   @Override
   @Transactional
-  public void addHit(EndpointHit endpointHit) {
+  public ViewStats addHit(EndpointHit endpointHit) {
     log.info("Регистрация обращения к {}", endpointHit);
 
-    statsRepository.save(statsMapper.toStats(endpointHit,
+    Stats stats = statsRepository.save(statsMapper.toStats(endpointHit,
       LocalDateTime.parse(endpointHit.getTimestamp(), CommonUtils.DT_FORMATTER)));
+
+    return statsMapper.toViewStats(stats);
   }
 
   @Override

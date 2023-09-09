@@ -40,6 +40,7 @@ public class BaseClient {
     } catch (HttpStatusCodeException e) {
       return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
     }
+
     return prepareGatewayResponse(statsServerResponse);
   }
 
@@ -47,6 +48,7 @@ public class BaseClient {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
     return headers;
   }
 

@@ -27,18 +27,20 @@ public class StatsController {
 
   @PostMapping(CommonUtils.HIT_ENDPOINT)
   @ResponseStatus(HttpStatus.CREATED)
-  public void addHit(@Valid @RequestBody EndpointHit endpointHit) {
-    statsService.addHit(endpointHit);
+  public ViewStats addHit(@Valid @RequestBody EndpointHit endpointHit) {
+    return statsService.addHit(endpointHit);
   }
 
   @GetMapping(CommonUtils.STATS_ENDPOINT)
   public List<ViewStats> getStats(@RequestParam @DateTimeFormat(pattern = CommonUtils.DT_FORMAT) LocalDateTime start,
                                   @RequestParam @DateTimeFormat(pattern = CommonUtils.DT_FORMAT) LocalDateTime end,
                                   @RequestParam(required = false) List<String> uris,
-                                  @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+                                  @RequestParam(defaultValue = "false") Boolean unique) {
     if (start.isAfter(end)) {
+      log.error("Недопустимый временной промежуток.");
       throw new IllegalArgumentException("Недопустимый временной промежуток.");
     }
+
     return statsService.getStats(start, end, uris, unique);
   }
 }

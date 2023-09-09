@@ -33,17 +33,17 @@ public class ErrorHandler {
     IllegalArgumentException.class,
     MissingServletRequestParameterException.class
   })
+
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleBadRequest(final Throwable exception) {
     log.error(exception.toString());
     return new ErrorResponse(exception.getMessage());
   }
 
-
   @ExceptionHandler
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponse handleException(final RuntimeException exception) {
-    log.error("Error 400: {}", exception.getMessage(), exception);
+    log.error("Error {}: {}", HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), exception);
     return new ErrorResponse(exception.getMessage());
   }
 }

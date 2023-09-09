@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,15 +25,19 @@ public class Stats {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @Column(name = "app_name", nullable = false)
+  @Column(name = "app_name")
+  @NotNull
   String app;
 
-  @Column(nullable = false)
+  @NotNull
   String uri;
 
-  @Column(name = "user_ip", nullable = false, length = 15)
+  @Column(name = "user_ip")
+  @Size(max = 15)
+  @NotNull
   String ip;
 
-  @Column(name = "created", nullable = false)
+  @Column(name = "created")
+  @NotNull
   LocalDateTime timestamp;
 }

@@ -35,6 +35,7 @@ public class StatsClient extends BaseClient {
       .ip(ip)
       .timestamp(timestamp.format(CommonUtils.DT_FORMATTER))
       .build();
+
     return post(CommonUtils.HIT_ENDPOINT, endpointHit);
   }
 
@@ -55,6 +56,7 @@ public class StatsClient extends BaseClient {
       start, end, uris, unique);
 
     if (start == null || end == null || start.isAfter(end)) {
+      log.error("Недопустимый временной промежуток.");
       throw new IllegalArgumentException("Недопустимый временной промежуток.");
     }
 
@@ -69,6 +71,7 @@ public class StatsClient extends BaseClient {
         uriBuilder.append("&uris=").append(uri);
       }
     }
+
     if (unique != null) {
       uriBuilder.append("&unique=").append(unique);
     }

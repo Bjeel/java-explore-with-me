@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 public class ViewStats {
   @NotBlank
   String app;
+
   @NotBlank
   String uri;
 
