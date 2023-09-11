@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -26,15 +27,15 @@ public class Stats {
   Long id;
 
   @Column(name = "app_name")
-  @NotNull
+  @NotBlank
   String app;
 
-  @NotNull
+  @NotBlank
   String uri;
 
   @Column(name = "user_ip")
   @Size(max = 15)
-  @NotNull
+  @NotBlank
   String ip;
 
   @Column(name = "created")
