@@ -19,4 +19,6 @@ public class MainCommonUtils {
   public static final int MAX_LENGTH_EMAIL = 254;
   public static final int MAX_LENGTH_USER_NAME = 250;
   public static final int MIN_LENGTH_NAME = 2;
+  public static final int MIN_LENGTH_COMMENT = 5;
+  public static final int MAX_LENGTH_COMMENT = 7000;
 }
