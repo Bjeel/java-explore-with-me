@@ -275,7 +275,7 @@ public class RequestServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.createEventRequest(user1.getId(), event2.getId()));
-            assertEquals("Нельзя создавать запрос на собственное событие.", exception.getMessage());
+            assertEquals("Can't create participant on own event", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventService, times(1)).getEventById(any());
@@ -289,7 +289,7 @@ public class RequestServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.createEventRequest(user2.getId(), event1.getId()));
-            assertEquals("Нельзя создавать запрос на неопубликованное событие.", exception.getMessage());
+            assertEquals("Can't create participant on unpublished event", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventService, times(1)).getEventById(any());
@@ -305,7 +305,7 @@ public class RequestServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.createEventRequest(user2.getId(), event2.getId()));
-            assertEquals("Создавать повторный запрос запрещено.", exception.getMessage());
+            assertEquals("Can't create repeated request", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventService, times(1)).getEventById(any());
@@ -322,7 +322,7 @@ public class RequestServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.createEventRequest(user2.getId(), event2.getId()));
-            assertEquals(String.format("Достигнут лимит подтвержденных запросов на участие: %s",
+            assertEquals(String.format("Requests limit: %s",
                     event2.getParticipantLimit()), exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
@@ -371,7 +371,7 @@ public class RequestServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> requestService.cancelEventRequest(user2.getId(), request4.getId()));
-            assertEquals("Заявки на участие с таким id не существует.", exception.getMessage());
+            assertEquals("Request not found", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(requestRepository, times(1)).findById(any());
@@ -385,7 +385,7 @@ public class RequestServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.cancelEventRequest(user2.getId(), request3.getId()));
-            assertEquals("Пользователь не является владельцем.", exception.getMessage());
+            assertEquals("User is not owner", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(requestRepository, times(1)).findById(any());
@@ -434,7 +434,7 @@ public class RequestServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.getEventRequestsByEventOwner(user2.getId(), event1.getId()));
-            assertEquals("Пользователь не является владельцем.", exception.getMessage());
+            assertEquals("User is not owner", exception.getMessage());
 
 
             verify(userService, times(1)).getUserById(any());
@@ -560,7 +560,7 @@ public class RequestServiceTest {
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.patchEventRequestsByEventOwner(user2.getId(), event2.getId(),
                             eventRequestStatusUpdateRequest));
-            assertEquals("Пользователь не является владельцем.", exception.getMessage());
+            assertEquals("User is not owner", exception.getMessage());
 
 
             verify(userService, times(1)).getUserById(any());
@@ -577,7 +577,7 @@ public class RequestServiceTest {
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> requestService.patchEventRequestsByEventOwner(user1.getId(), event2.getId(),
                             eventRequestStatusUpdateRequest));
-            assertEquals("Некоторые запросы на участие не найдены.", exception.getMessage());
+            assertEquals("Have not existing events", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventService, times(1)).getEventById(any());
@@ -595,7 +595,7 @@ public class RequestServiceTest {
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.patchEventRequestsByEventOwner(user1.getId(), event2.getId(),
                             eventRequestStatusUpdateRequest));
-            assertEquals("Изменять можно только заявки, находящиеся в ожидании.", exception.getMessage());
+            assertEquals("Can't change request with status PENDING", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventService, times(1)).getEventById(any());
@@ -617,7 +617,7 @@ public class RequestServiceTest {
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> requestService.patchEventRequestsByEventOwner(user1.getId(), event2.getId(),
                             eventRequestStatusUpdateRequest));
-            assertEquals(String.format("Достигнут лимит подтвержденных запросов на участие: %s",
+            assertEquals(String.format("Requests limit: %s",
                     event2.getParticipantLimit()), exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());

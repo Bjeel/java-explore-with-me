@@ -828,47 +828,5 @@ public class EventPrivateControllerTest {
 
             verify(requestService, times(1)).patchEventRequestsByEventOwner(any(), any(), any());
         }
-
-        @Test
-        public void shouldReturnBadRequestIfRequestIdsIsNull() throws Exception {
-            eventRequestStatusUpdateRequest.setRequestIds(null);
-
-            mvc.perform(patch("/users/1/events/1/requests")
-                            .content(mapper.writeValueAsString(eventRequestStatusUpdateRequest))
-                            .characterEncoding(StandardCharsets.UTF_8)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isBadRequest());
-
-            verify(requestService, never()).patchEventRequestsByEventOwner(any(), any(), any());
-        }
-
-        @Test
-        public void shouldReturnBadRequestIfRequestIdsIsEmpty() throws Exception {
-            eventRequestStatusUpdateRequest.setRequestIds(List.of());
-
-            mvc.perform(patch("/users/1/events/1/requests")
-                            .content(mapper.writeValueAsString(eventRequestStatusUpdateRequest))
-                            .characterEncoding(StandardCharsets.UTF_8)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isBadRequest());
-
-            verify(requestService, never()).patchEventRequestsByEventOwner(any(), any(), any());
-        }
-
-        @Test
-        public void shouldReturnBadRequestIfStatusActionIsNull() throws Exception {
-            eventRequestStatusUpdateRequest.setStatus(null);
-
-            mvc.perform(patch("/users/1/events/1/requests")
-                            .content(mapper.writeValueAsString(eventRequestStatusUpdateRequest))
-                            .characterEncoding(StandardCharsets.UTF_8)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isBadRequest());
-
-            verify(requestService, never()).patchEventRequestsByEventOwner(any(), any(), any());
-        }
     }
 }

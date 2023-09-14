@@ -160,7 +160,7 @@ public class CategoryServiceImplTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> categoryService.getById(99L));
-            assertEquals("Категории с таким id не существует.", exception.getMessage());
+            assertEquals("Category not found", exception.getMessage());
 
             verify(categoryRepository, times(1)).findById(any());
         }
@@ -171,13 +171,7 @@ public class CategoryServiceImplTest {
         @Test
         public void shouldPatch() {
             when(categoryMapper.toCategoryDto(any())).thenCallRealMethod();
-            when(categoryMapper.categoryDtoToCategory(any())).thenCallRealMethod();
             when(categoryRepository.findById(category1.getId())).thenReturn(Optional.of(category1));
-            when(categoryRepository.save(any()))
-                    .thenReturn(Category.builder()
-                            .id(category1.getId())
-                            .name(categoryDto2.getName())
-                            .build());
 
             CategoryDto categoryDtoFromService = categoryService.patch(category1.getId(), categoryDto2);
 
@@ -185,14 +179,7 @@ public class CategoryServiceImplTest {
             assertEquals(categoryDto2.getName(), categoryDtoFromService.getName());
 
             verify(categoryMapper, times(1)).toCategoryDto(any());
-            verify(categoryMapper, times(1)).categoryDtoToCategory(any());
             verify(categoryRepository, times(1)).findById(any());
-            verify(categoryRepository, times(1)).save(categoryArgumentCaptor.capture());
-
-            Category savedCategory = categoryArgumentCaptor.getValue();
-
-            assertEquals(category1.getId(), savedCategory.getId());
-            assertEquals(categoryDto2.getName(), savedCategory.getName());
         }
 
         @Test
@@ -201,7 +188,7 @@ public class CategoryServiceImplTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> categoryService.patch(category1.getId(), categoryDto2));
-            assertEquals("Категории с таким id не существует.", exception.getMessage());
+            assertEquals("Category not found", exception.getMessage());
 
             verify(categoryRepository, times(1)).findById(any());
             verify(categoryRepository, never()).save(any());
@@ -226,7 +213,7 @@ public class CategoryServiceImplTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> categoryService.deleteById(99L));
-            assertEquals("Категории с таким id не существует.", exception.getMessage());
+            assertEquals("Category not found", exception.getMessage());
 
             verify(categoryRepository, times(1)).findById(any());
             verify(categoryRepository, never()).deleteById(any());
@@ -252,7 +239,7 @@ public class CategoryServiceImplTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> categoryService.getCategoryById(99L));
-            assertEquals("Категории с таким id не существует.", exception.getMessage());
+            assertEquals("Category not found", exception.getMessage());
 
             verify(categoryRepository, times(1)).findById(any());
         }

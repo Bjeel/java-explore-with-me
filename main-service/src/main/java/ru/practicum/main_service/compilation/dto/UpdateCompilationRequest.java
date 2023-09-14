@@ -18,5 +18,6 @@ public class UpdateCompilationRequest {
   String title;
 
   Boolean pinned;
+
   List<Long> events;
 }

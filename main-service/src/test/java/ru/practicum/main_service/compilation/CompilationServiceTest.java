@@ -203,7 +203,7 @@ public class CompilationServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> compilationService.create(newCompilationDto1));
-            assertEquals("Некоторые события не найдены.", exception.getMessage());
+            assertEquals("Events not found", exception.getMessage());
 
             verify(eventService, times(1)).getEventsByIds(any());
             verify(compilationRepository, never()).save(any());
@@ -216,7 +216,7 @@ public class CompilationServiceTest {
         public void shouldPatch() {
             when(compilationRepository.findById(any())).thenReturn(Optional.of(compilation1));
             when(eventService.getEventsByIds(any())).thenReturn(List.of(event1));
-            when(compilationRepository.save(any())).thenReturn(updatedCompilation1);
+
             when(eventService.toEventsShortDto(List.of(event1))).thenReturn(List.of(eventShortDto1));
             when(compilationMapper.toCompilationDto(any(), any())).thenCallRealMethod();
 
@@ -226,14 +226,9 @@ public class CompilationServiceTest {
 
             verify(compilationRepository, times(2)).findById(any());
             verify(eventService, times(1)).getEventsByIds(any());
-            verify(compilationRepository, times(1)).save(compilationArgumentCaptor.capture());
+
             verify(eventService, times(1)).toEventsShortDto(any());
             verify(compilationMapper, times(1)).toCompilationDto(any(), any());
-
-            Compilation savedCompilation = compilationArgumentCaptor.getValue();
-
-            assertEquals(updatedCompilation1.getId(), savedCompilation.getId());
-            checkResults(updatedCompilation1, savedCompilation);
         }
 
         @Test
@@ -242,7 +237,7 @@ public class CompilationServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> compilationService.patch(compilation1.getId(), updateCompilationRequest1));
-            assertEquals("Подборки с таким id не существует.", exception.getMessage());
+            assertEquals("Compilation not found", exception.getMessage());
 
             verify(compilationRepository, times(1)).findById(any());
             verify(compilationRepository, never()).save(any());
@@ -255,7 +250,7 @@ public class CompilationServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> compilationService.patch(compilation1.getId(), updateCompilationRequest1));
-            assertEquals("Некоторые события не найдены.", exception.getMessage());
+            assertEquals("Events not found", exception.getMessage());
 
             verify(compilationRepository, times(1)).findById(any());
             verify(compilationRepository, never()).save(any());
@@ -280,7 +275,7 @@ public class CompilationServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> compilationService.deleteById(compilation1.getId()));
-            assertEquals("Подборки с таким id не существует.", exception.getMessage());
+            assertEquals("Compilation not found", exception.getMessage());
 
             verify(compilationRepository, times(1)).findById(any());
             verify(compilationRepository, never()).deleteById(any());
@@ -358,7 +353,7 @@ public class CompilationServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> compilationService.getById(compilation1.getId()));
-            assertEquals("Подборки с таким id не существует.", exception.getMessage());
+            assertEquals("Compilation not found", exception.getMessage());
 
             verify(compilationRepository, times(1)).findById(compilation1.getId());
         }

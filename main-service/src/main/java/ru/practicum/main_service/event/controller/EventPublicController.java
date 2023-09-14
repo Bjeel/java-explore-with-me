@@ -31,17 +31,16 @@ public class EventPublicController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<EventShortDto> getEventsByPublic(
-    @RequestParam(required = false) String text,
-    @RequestParam(required = false) List<Long> categories,
-    @RequestParam(required = false) Boolean paid,
-    @RequestParam(required = false) @DateTimeFormat(pattern = MainCommonUtils.DT_FORMAT) LocalDateTime rangeStart,
-    @RequestParam(required = false) @DateTimeFormat(pattern = MainCommonUtils.DT_FORMAT) LocalDateTime rangeEnd,
-    @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-    @RequestParam(required = false) EventSortType sort,
-    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
-    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size,
-    HttpServletRequest request) {
+  public List<EventShortDto> getEventsByPublic(@RequestParam(required = false) String text,
+                                               @RequestParam(required = false) List<Long> categories,
+                                               @RequestParam(required = false) Boolean paid,
+                                               @RequestParam(required = false) @DateTimeFormat(pattern = MainCommonUtils.DT_FORMAT) LocalDateTime rangeStart,
+                                               @RequestParam(required = false) @DateTimeFormat(pattern = MainCommonUtils.DT_FORMAT) LocalDateTime rangeEnd,
+                                               @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                               @RequestParam(required = false) EventSortType sort,
+                                               @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                               @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size,
+                                               HttpServletRequest request) {
     return eventService.getEventsByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
       sort, from, size, request);
   }

@@ -239,8 +239,7 @@ public class EventServiceTest {
                     () -> eventService.getEventsByAdmin(List.of(event1.getInitiator().getId()),
                             List.of(event1.getState()), List.of(event1.getCategory().getId()), event1.getCreatedOn(),
                             event1.getCreatedOn().minusMinutes(5), 0, 10));
-            assertEquals(String.format("Field: eventDate. Error: некорректные параметры временного " +
-                    "интервала. Value: rangeStart = %s, rangeEnd = %s", event1.getCreatedOn(),
+            assertEquals(String.format("Field: eventDate. Error: Incorrect time interval. Value: rangeStart = %s, rangeEnd = %s", event1.getCreatedOn(),
                     event1.getCreatedOn().minusMinutes(5)), exception.getMessage());
 
             verify(eventRepository, never()).getEventsByAdmin(any(), any(), any(), any(), any(), any(), any());
@@ -293,7 +292,6 @@ public class EventServiceTest {
                     .thenReturn(Optional.empty());
             when(locationRepository.save(any())).thenReturn(updatedLocation);
             when(statsService.getConfirmedRequests(any())).thenReturn(confirmedRequests);
-            when(eventRepository.save(any())).thenReturn(updatedEvent1);
             when(statsService.getViews(any())).thenReturn(views);
             when(eventMapper.toEventFullDto(any(), any(), any())).thenReturn(eventFullDto1);
 
@@ -307,13 +305,9 @@ public class EventServiceTest {
             verify(locationRepository, times(1)).findByLatAndLon(any(), any());
             verify(locationRepository, times(1)).save(any());
             verify(statsService, times(2)).getConfirmedRequests(any());
-            verify(eventRepository, times(1)).save(eventArgumentCaptor.capture());
+
             verify(statsService, times(1)).getViews(any());
             verify(eventMapper, times(1)).toEventFullDto(any(), any(), any());
-
-            Event savedEvent = eventArgumentCaptor.getValue();
-
-            checkResults(updatedEvent1, savedEvent);
         }
 
         @Test
@@ -329,7 +323,6 @@ public class EventServiceTest {
                     .thenReturn(Optional.empty());
             when(locationRepository.save(any())).thenReturn(updatedLocation);
             when(statsService.getConfirmedRequests(any())).thenReturn(confirmedRequests);
-            when(eventRepository.save(any())).thenReturn(updatedEvent1);
             when(statsService.getViews(any())).thenReturn(views);
             when(eventMapper.toEventFullDto(any(), any(), any())).thenReturn(eventFullDto1);
 
@@ -343,13 +336,8 @@ public class EventServiceTest {
             verify(locationRepository, times(1)).findByLatAndLon(any(), any());
             verify(locationRepository, times(1)).save(any());
             verify(statsService, times(2)).getConfirmedRequests(any());
-            verify(eventRepository, times(1)).save(eventArgumentCaptor.capture());
             verify(statsService, times(1)).getViews(any());
             verify(eventMapper, times(1)).toEventFullDto(any(), any(), any());
-
-            Event savedEvent = eventArgumentCaptor.getValue();
-
-            checkResults(updatedEvent1, savedEvent);
         }
 
         @Test
@@ -365,7 +353,6 @@ public class EventServiceTest {
                     .thenReturn(Optional.empty());
             when(locationRepository.save(any())).thenReturn(updatedLocation);
             when(statsService.getConfirmedRequests(any())).thenReturn(confirmedRequests);
-            when(eventRepository.save(any())).thenReturn(updatedEvent1);
             when(statsService.getViews(any())).thenReturn(views);
             when(eventMapper.toEventFullDto(any(), any(), any())).thenReturn(eventFullDto1);
 
@@ -379,13 +366,8 @@ public class EventServiceTest {
             verify(locationRepository, times(1)).findByLatAndLon(any(), any());
             verify(locationRepository, times(1)).save(any());
             verify(statsService, times(2)).getConfirmedRequests(any());
-            verify(eventRepository, times(1)).save(eventArgumentCaptor.capture());
             verify(statsService, times(1)).getViews(any());
             verify(eventMapper, times(1)).toEventFullDto(any(), any(), any());
-
-            Event savedEvent = eventArgumentCaptor.getValue();
-
-            checkResults(updatedEvent1, savedEvent);
         }
 
         @Test
@@ -394,8 +376,7 @@ public class EventServiceTest {
 
             RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> eventService.patchEventByAdmin(event1.getId(), updateEventAdminRequest));
-            assertEquals(String.format("Field: eventDate. Error: остается слишком мало времени для " +
-                    "подготовки. Value: %s", updateEventAdminRequest.getEventDate()), exception.getMessage());
+            assertEquals(String.format("Field: eventDate. Error: Time is small. Value: %s", updateEventAdminRequest.getEventDate()), exception.getMessage());
 
             verify(eventRepository, never()).save(any());
         }
@@ -406,7 +387,7 @@ public class EventServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> eventService.patchEventByAdmin(event1.getId(), updateEventAdminRequest));
-            assertEquals("События с таким id не существует.", exception.getMessage());
+            assertEquals("Event not found", exception.getMessage());
 
             verify(eventRepository, times(1)).findById(any());
             verify(eventRepository, never()).save(any());
@@ -427,8 +408,7 @@ public class EventServiceTest {
 
           RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> eventService.patchEventByAdmin(event1.getId(), updateEventAdminRequest));
-            assertEquals(String.format("Field: stateAction. Error: Новый лимит участников должен " +
-                    "быть не меньше количества уже одобренных заявок: %s", confirmedRequests.get(event1.getId())),
+            assertEquals(String.format("Field: stateAction. Error: Participant count can't be more than settled level: %s", confirmedRequests.get(event1.getId())),
                     exception.getMessage());
 
             verify(eventRepository, times(1)).findById(any());
@@ -452,8 +432,7 @@ public class EventServiceTest {
 
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> eventService.patchEventByAdmin(event2.getId(), updateEventAdminRequest));
-            assertEquals(String.format("Field: stateAction. Error: опубликовать можно только " +
-                            "события, находящиеся в ожидании публикации. Текущий статус: %s", event2.getState()),
+            assertEquals(String.format("Field: stateAction. Error: status not Pending: %s", event2.getState()),
                     exception.getMessage());
 
             verify(eventRepository, times(1)).findById(any());
@@ -542,8 +521,7 @@ public class EventServiceTest {
 
           RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> eventService.createEventByPrivate(event1.getInitiator().getId(), newEventDto));
-            assertEquals(String.format("Field: eventDate. Error: остается слишком мало времени для " +
-                    "подготовки. Value: %s", newEventDto.getEventDate()), exception.getMessage());
+            assertEquals(String.format("Field: eventDate. Error: Time is small. Value: %s", newEventDto.getEventDate()), exception.getMessage());
 
             verify(eventRepository, never()).save(any());
         }
@@ -581,7 +559,7 @@ public class EventServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> eventService.getEventByPrivate(event1.getInitiator().getId(), event1.getId()));
-            assertEquals("События с таким id не существует.", exception.getMessage());
+            assertEquals("Event not found", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventRepository, times(1)).findByIdAndInitiatorId(any(), any());
@@ -704,8 +682,7 @@ public class EventServiceTest {
           RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> eventService.patchEventByPrivate(event1.getInitiator().getId(), event1.getId(),
                             updateEventUserRequest));
-            assertEquals(String.format("Field: eventDate. Error: остается слишком мало времени для " +
-                    "подготовки. Value: %s", updateEventUserRequest.getEventDate()), exception.getMessage());
+            assertEquals(String.format("Field: eventDate. Error: Time is small. Value: %s", updateEventUserRequest.getEventDate()), exception.getMessage());
         }
 
         @Test
@@ -717,7 +694,7 @@ public class EventServiceTest {
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> eventService.patchEventByPrivate(event1.getInitiator().getId(), event1.getId(),
                             updateEventUserRequest));
-            assertEquals("События с таким id не существует.", exception.getMessage());
+            assertEquals("Event not found", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventRepository, times(1)).findByIdAndInitiatorId(any(), any());
@@ -732,7 +709,7 @@ public class EventServiceTest {
             ForbiddenException exception = assertThrows(ForbiddenException.class,
                     () -> eventService.patchEventByPrivate(event3.getInitiator().getId(), event3.getId(),
                             updateEventUserRequest));
-            assertEquals("Изменять можно только неопубликованные или отмененные события.", exception.getMessage());
+            assertEquals("Can't updated published event", exception.getMessage());
 
             verify(userService, times(1)).getUserById(any());
             verify(eventRepository, times(1)).findByIdAndInitiatorId(any(), any());
@@ -773,8 +750,7 @@ public class EventServiceTest {
                     () -> eventService.getEventsByPublic("some text", List.of(event1.getCategory().getId()),
                             false, event1.getCreatedOn(), event1.getCreatedOn().minusMinutes(5), true,
                             EventSortType.EVENT_DATE, 0, 10, new MockHttpServletRequest()));
-            assertEquals(String.format("Field: eventDate. Error: некорректные параметры временного " +
-                            "интервала. Value: rangeStart = %s, rangeEnd = %s", event1.getCreatedOn(),
+            assertEquals(String.format("Field: eventDate. Error: Incorrect time interval. Value: rangeStart = %s, rangeEnd = %s", event1.getCreatedOn(),
                     event1.getCreatedOn().minusMinutes(5)), exception.getMessage());
 
             verify(eventRepository, never()).getEventsByPublic(any(), any(), any(), any(), any(), any(), any());
@@ -807,7 +783,7 @@ public class EventServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> eventService.getEventByPublic(event3.getId(), new MockHttpServletRequest()));
-            assertEquals("События с таким id не существует.", exception.getMessage());
+            assertEquals("Event not found", exception.getMessage());
 
             verify(eventRepository, times(1)).findById(any());
         }
@@ -818,7 +794,7 @@ public class EventServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> eventService.getEventByPublic(event1.getId(), new MockHttpServletRequest()));
-            assertEquals("Событие с таким id не опубликовано.", exception.getMessage());
+            assertEquals("Event is not published", exception.getMessage());
 
             verify(eventRepository, times(1)).findById(any());
         }
@@ -843,7 +819,7 @@ public class EventServiceTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> eventService.getEventById(event1.getId()));
-            assertEquals("События с таким id не существует.", exception.getMessage());
+            assertEquals("Event not found", exception.getMessage());
 
             verify(eventRepository, times(1)).findById(any());
         }

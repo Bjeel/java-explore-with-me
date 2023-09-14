@@ -38,10 +38,9 @@ public class UserAdminController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<UserDto> getUsers(
-    @RequestParam(required = false) List<Long> ids,
-    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
-    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
+  public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
     return userService.getUsers(ids, PageRequest.of(from / size, size));
   }
 

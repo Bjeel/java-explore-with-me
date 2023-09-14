@@ -182,7 +182,7 @@ public class UserServiceImplTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> userService.deleteById(99L));
-            assertEquals("Пользователя с таким id не существует.", exception.getMessage());
+            assertEquals("User not found", exception.getMessage());
 
             verify(userRepository, never()).deleteById(any());
         }
@@ -209,7 +209,7 @@ public class UserServiceImplTest {
 
             NotFoundException exception = assertThrows(NotFoundException.class,
                     () -> userService.getUserById(99L));
-            assertEquals("Пользователя с таким id не существует.", exception.getMessage());
+            assertEquals("User not found", exception.getMessage());
 
             verify(userRepository, times(1)).findById(any());
         }

@@ -2,6 +2,7 @@ package ru.practicum.main_service.user.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.main_service.MainCommonUtils;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,10 +17,10 @@ import javax.validation.constraints.Size;
 public class NewUserRequest {
   @Email
   @NotBlank
-  @Size(min = 6, max = 254)
+  @Size(min = MainCommonUtils.MIN_LENGTH_EMAIL, max = MainCommonUtils.MAX_LENGTH_EMAIL)
   String email;
 
   @NotBlank
-  @Size(min = 2, max = 250)
+  @Size(min = MainCommonUtils.MIN_LENGTH_NAME, max = MainCommonUtils.MAX_LENGTH_USER_NAME)
   String name;
 }

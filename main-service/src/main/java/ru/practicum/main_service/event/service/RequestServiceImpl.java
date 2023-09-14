@@ -39,7 +39,7 @@ public class RequestServiceImpl implements RequestService {
 
   @Override
   public List<ParticipationRequestDto> getEventRequestsByRequester(Long userId) {
-    log.info("Вывод списка запросов на участие в чужих событиях пользователем с id {}", userId);
+    log.info("Get participation into event by id {}", userId);
 
     userService.getUserById(userId);
 
@@ -49,23 +49,26 @@ public class RequestServiceImpl implements RequestService {
   @Override
   @Transactional
   public ParticipationRequestDto createEventRequest(Long userId, Long eventId) {
-    log.info("Создание запроса на участие в событии с id {} пользователем с id {}", eventId, userId);
+    log.info("Create participation for event by id {} from user id {}", eventId, userId);
 
     User user = userService.getUserById(userId);
     Event event = eventService.getEventById(eventId);
 
     if (Objects.equals(event.getInitiator().getId(), userId)) {
-      throw new ForbiddenException("Нельзя создавать запрос на собственное событие.");
+      log.error("Can't create participant on own event");
+      throw new ForbiddenException("Can't create participant on own event");
     }
 
     if (!event.getState().equals(EventState.PUBLISHED)) {
-      throw new ForbiddenException("Нельзя создавать запрос на неопубликованное событие.");
+      log.error("Can't create participant on unpublished event");
+      throw new ForbiddenException("Can't create participant on unpublished event");
     }
 
     Optional<Request> oldRequest = requestRepository.findByEventIdAndRequesterId(eventId, userId);
 
     if (oldRequest.isPresent()) {
-      throw new ForbiddenException("Создавать повторный запрос запрещено.");
+      log.error("Can't create repeated request");
+      throw new ForbiddenException("Can't create repeated request");
     }
 
     checkIsNewLimitGreaterOld(
@@ -91,12 +94,15 @@ public class RequestServiceImpl implements RequestService {
   @Override
   @Transactional
   public ParticipationRequestDto cancelEventRequest(Long userId, Long requestId) {
-    log.info("Отмена запроса с id {} на участие в событии пользователем с id {}", requestId, userId);
+    log.info("Reject request id {} for user id {}", requestId, userId);
 
     userService.getUserById(userId);
 
     Request request = requestRepository.findById(requestId)
-      .orElseThrow(() -> new NotFoundException("Заявки на участие с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error("Request not found");
+        return new NotFoundException("Request not found");
+      });
 
     checkUserIsOwner(request.getRequester().getId(), userId);
 
@@ -107,7 +113,7 @@ public class RequestServiceImpl implements RequestService {
 
   @Override
   public List<ParticipationRequestDto> getEventRequestsByEventOwner(Long userId, Long eventId) {
-    log.info("Вывод списка запросов на участие в событии с id {} владельцем с id {}", eventId, userId);
+    log.info("Get event's participants list id {} owner id {}", eventId, userId);
 
     userService.getUserById(userId);
     Event event = eventService.getEventById(eventId);
@@ -121,7 +127,7 @@ public class RequestServiceImpl implements RequestService {
   @Transactional
   public EventRequestStatusUpdateResult patchEventRequestsByEventOwner(
     Long userId, Long eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
-    log.info("Обновление запросов на участие в событии с id {} владельцем с id {} и параметрами {}",
+    log.info("Update event's requests id {} owner id {} with new fields {}",
       eventId, userId, eventRequestStatusUpdateRequest);
 
     userService.getUserById(userId);
@@ -141,13 +147,15 @@ public class RequestServiceImpl implements RequestService {
     List<Request> requests = requestRepository.findAllByIdIn(eventRequestStatusUpdateRequest.getRequestIds());
 
     if (requests.size() != eventRequestStatusUpdateRequest.getRequestIds().size()) {
-      throw new NotFoundException("Некоторые запросы на участие не найдены.");
+      log.error("Have not existing events");
+      throw new NotFoundException("Have not existing events");
     }
 
     if (!requests.stream()
       .map(Request::getStatus)
       .allMatch(RequestStatus.PENDING::equals)) {
-      throw new ForbiddenException("Изменять можно только заявки, находящиеся в ожидании.");
+      log.error("Can't change request with status PENDING");
+      throw new ForbiddenException("Can't change request with status PENDING");
     }
 
     if (eventRequestStatusUpdateRequest.getStatus().equals(RequestStatusAction.REJECTED)) {
@@ -185,14 +193,16 @@ public class RequestServiceImpl implements RequestService {
 
   private void checkIsNewLimitGreaterOld(Long newLimit, Integer eventParticipantLimit) {
     if (eventParticipantLimit != 0 && (newLimit > eventParticipantLimit)) {
-      throw new ForbiddenException(String.format("Достигнут лимит подтвержденных запросов на участие: %d",
+      log.error("Requests limit: {}", eventParticipantLimit);
+      throw new ForbiddenException(String.format("Requests limit: %d",
         eventParticipantLimit));
     }
   }
 
   private void checkUserIsOwner(Long id, Long userId) {
     if (!Objects.equals(id, userId)) {
-      throw new ForbiddenException("Пользователь не является владельцем.");
+      log.error("User is not owner");
+      throw new ForbiddenException("User is not owner");
     }
   }
 }

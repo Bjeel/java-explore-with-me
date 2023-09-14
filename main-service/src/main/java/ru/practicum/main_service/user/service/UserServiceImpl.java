@@ -26,14 +26,14 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public UserDto create(NewUserRequest newUserRequest) {
-    log.info("Добавление пользователя {}", newUserRequest);
+    log.info("Add user {}", newUserRequest);
 
     return userMapper.toUserDto(userRepository.save(userMapper.toUser(newUserRequest)));
   }
 
   @Override
   public List<UserDto> getUsers(List<Long> ids, Pageable pageable) {
-    log.info("Вывод пользователей с id {} и пагинацией {}", ids, pageable);
+    log.info("Get users by ids {} with pagination {}", ids, pageable);
 
     if (ids == null || ids.isEmpty()) {
       return userRepository.findAll(pageable).stream()
@@ -49,19 +49,25 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void deleteById(Long id) {
-    log.info("Удаление пользователя с id {}", id);
+    log.info("Delete users id {}", id);
 
     userRepository.findById(id)
-      .orElseThrow(() -> new NotFoundException("Пользователя с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error("User not found");
+        return new NotFoundException("User not found");
+      });
 
     userRepository.deleteById(id);
   }
 
   @Override
   public User getUserById(Long id) {
-    log.info("Вывод пользователя с id {}", id);
+    log.info("Get user by id {}", id);
 
     return userRepository.findById(id)
-      .orElseThrow(() -> new NotFoundException("Пользователя с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error("User not found");
+        return new NotFoundException("User not found");
+      });
   }
 }

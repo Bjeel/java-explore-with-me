@@ -21,5 +21,6 @@ public class NewCompilationDto {
   String title;
 
   Boolean pinned = false;
+
   List<Long> events = new ArrayList<>();
 }

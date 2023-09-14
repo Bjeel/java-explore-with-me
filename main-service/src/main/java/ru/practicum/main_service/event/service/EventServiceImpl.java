@@ -52,7 +52,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<EventFullDto> getEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                              LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
-    log.info("Вывод событий на запрос администратора с параметрами users = {}, states = {}, categoriesId = {}, " +
+    log.info("Get events for admin users = {}, states = {}, categoriesId = {}, " +
         "rangeStart = {}, rangeEnd = {}, from = {}, size = {}",
       users, states, categories, rangeStart, rangeEnd, from, size);
 
@@ -66,7 +66,7 @@ public class EventServiceImpl implements EventService {
   @Override
   @Transactional
   public EventFullDto patchEventByAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
-    log.info("Обновление события с id {} по запросу администратора с параметрами {}", eventId, updateEventAdminRequest);
+    log.info("Update event by admin id: {} new fields: {}", eventId, updateEventAdminRequest);
 
     checkNewEventDate(updateEventAdminRequest.getEventDate(), LocalDateTime.now().plusHours(1));
 
@@ -109,8 +109,7 @@ public class EventServiceImpl implements EventService {
 
     if (updateEventAdminRequest.getStateAction() != null) {
       if (!event.getState().equals(EventState.PENDING)) {
-        throw new ForbiddenException(String.format("Field: stateAction. Error: опубликовать можно только " +
-          "события, находящиеся в ожидании публикации. Текущий статус: %s", event.getState()));
+        throw new ForbiddenException(String.format("Field: stateAction. Error: status not Pending: %s", event.getState()));
       }
 
       switch (updateEventAdminRequest.getStateAction()) {
@@ -124,16 +123,16 @@ public class EventServiceImpl implements EventService {
       }
     }
 
-    if (updateEventAdminRequest.getTitle() != null) {
+    if (updateEventAdminRequest.getTitle() != null && !updateEventAdminRequest.getTitle().isBlank()) {
       event.setTitle(updateEventAdminRequest.getTitle());
     }
 
-    return toEventFullDto(eventRepository.save(event));
+    return toEventFullDto(event);
   }
 
   @Override
   public List<EventShortDto> getAllEventsByPrivate(Long userId, Pageable pageable) {
-    log.info("Вывод всех событий пользователя с id {} и пагинацией {}", userId, pageable);
+    log.info("Get all user's events by user id {} with pagination {}", userId, pageable);
 
     userService.getUserById(userId);
 
@@ -145,7 +144,7 @@ public class EventServiceImpl implements EventService {
   @Override
   @Transactional
   public EventFullDto createEventByPrivate(Long userId, NewEventDto newEventDto) {
-    log.info("Создание нового события пользователем с id {} и параметрами {}", userId, newEventDto);
+    log.info("Create new event for user by id {} with fields {}", userId, newEventDto);
 
     checkNewEventDate(newEventDto.getEventDate(), LocalDateTime.now().plusHours(2));
 
@@ -161,7 +160,7 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public EventFullDto getEventByPrivate(Long userId, Long eventId) {
-    log.info("Вывод события с id {}, созданного пользователем с id {}", eventId, userId);
+    log.info("Get event by id {}, for user with id {}", eventId, userId);
 
     userService.getUserById(userId);
 
@@ -173,7 +172,7 @@ public class EventServiceImpl implements EventService {
   @Override
   @Transactional
   public EventFullDto patchEventByPrivate(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest) {
-    log.info("Обновление события с id {} по запросу пользователя с id {} с новыми параметрами {}",
+    log.info("Update event by id {} from user with id {} and updated fields {}",
       eventId, userId, updateEventUserRequest);
 
     checkNewEventDate(updateEventUserRequest.getEventDate(), LocalDateTime.now().plusHours(2));
@@ -183,7 +182,8 @@ public class EventServiceImpl implements EventService {
     Event event = getEventByIdAndInitiatorId(eventId, userId);
 
     if (event.getState().equals(EventState.PUBLISHED)) {
-      throw new ForbiddenException("Изменять можно только неопубликованные или отмененные события.");
+      log.error("Can't updated published event");
+      throw new ForbiddenException("Can't updated published event");
     }
 
     if (updateEventUserRequest.getAnnotation() != null) {
@@ -277,12 +277,13 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public EventFullDto getEventByPublic(Long eventId, HttpServletRequest request) {
-    log.info("Вывод события с id {} на публичный запрос", eventId);
+    log.info("Get event by id {}", eventId);
 
     Event event = getEventById(eventId);
 
     if (!event.getState().equals(EventState.PUBLISHED)) {
-      throw new NotFoundException("Событие с таким id не опубликовано.");
+      log.error("Event is not published");
+      throw new NotFoundException("Event is not published");
     }
 
     statsService.addHit(request);
@@ -292,15 +293,18 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public Event getEventById(Long eventId) {
-    log.info("Вывод события с id {}", eventId);
+    log.info("Get event by id {}", eventId);
 
     return eventRepository.findById(eventId)
-      .orElseThrow(() -> new NotFoundException("События с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error("Event not found");
+        return new NotFoundException("Event not found");
+      });
   }
 
   @Override
   public List<Event> getEventsByIds(List<Long> eventsId) {
-    log.info("Вывод списка событий с ids {}", eventsId);
+    log.info("Get events by ids {}", eventsId);
 
     if (eventsId.isEmpty()) {
       return new ArrayList<>();
@@ -339,10 +343,13 @@ public class EventServiceImpl implements EventService {
   }
 
   private Event getEventByIdAndInitiatorId(Long eventId, Long userId) {
-    log.info("Вывод события с id {}", eventId);
+    log.info("Get event by id {}", eventId);
 
     return eventRepository.findByIdAndInitiatorId(eventId, userId)
-      .orElseThrow(() -> new NotFoundException("События с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error("Event not found");
+        return new NotFoundException("Event not found");
+      });
   }
 
   private Location getOrSaveLocation(LocationDto locationDto) {
@@ -357,22 +364,19 @@ public class EventServiceImpl implements EventService {
 
   private void checkStartIsBeforeEnd(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
     if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-      throw new WrongDateException(String.format("Field: eventDate. Error: некорректные параметры временного " +
-        "интервала. Value: rangeStart = %s, rangeEnd = %s", rangeStart, rangeEnd));
+      throw new WrongDateException(String.format("Field: eventDate. Error: Incorrect time interval. Value: rangeStart = %s, rangeEnd = %s", rangeStart, rangeEnd));
     }
   }
 
   private void checkNewEventDate(LocalDateTime newEventDate, LocalDateTime minTimeBeforeEventStart) {
     if (newEventDate != null && newEventDate.isBefore(minTimeBeforeEventStart)) {
-      throw new WrongDateException(String.format("Field: eventDate. Error: остается слишком мало времени для " +
-        "подготовки. Value: %s", newEventDate));
+      throw new WrongDateException(String.format("Field: eventDate. Error: Time is small. Value: %s", newEventDate));
     }
   }
 
   private void checkIsNewLimitNotLessOld(Integer newLimit, Long eventParticipantLimit) {
     if (newLimit != 0 && eventParticipantLimit != 0 && (newLimit < eventParticipantLimit)) {
-      throw new RuntimeException(String.format("Field: stateAction. Error: Новый лимит участников должен " +
-        "быть не меньше количества уже одобренных заявок: %s", eventParticipantLimit));
+      throw new RuntimeException(String.format("Field: stateAction. Error: Participant count can't be more than settled level: %s", eventParticipantLimit));
     }
   }
 }

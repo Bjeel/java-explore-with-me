@@ -14,4 +14,9 @@ public class MainCommonUtils {
   public static final int MIN_LENGTH_TITLE = 3;
   public static final int MAX_LENGTH_TITLE = 120;
   public static final int MAX_LENGTH_COMPILATION_TITLE = 50;
+  public static final int MAX_LENGTH_NAME = 50;
+  public static final int MIN_LENGTH_EMAIL = 6;
+  public static final int MAX_LENGTH_EMAIL = 254;
+  public static final int MAX_LENGTH_USER_NAME = 250;
+  public static final int MIN_LENGTH_NAME = 2;
 }

@@ -39,10 +39,9 @@ public class EventPrivateController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<EventShortDto> getAllEventsByPrivate(
-    @PathVariable Long userId,
-    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
-    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
+  public List<EventShortDto> getAllEventsByPrivate(@PathVariable Long userId,
+                                                   @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                                   @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
     return eventService.getAllEventsByPrivate(userId, PageRequest.of(from / size, size));
   }
 
@@ -55,35 +54,31 @@ public class EventPrivateController {
 
   @GetMapping("/{eventId}")
   @ResponseStatus(HttpStatus.OK)
-  public EventFullDto getEventByPrivate(
-    @PathVariable Long userId,
-    @PathVariable Long eventId) {
+  public EventFullDto getEventByPrivate(@PathVariable Long userId,
+                                        @PathVariable Long eventId) {
     return eventService.getEventByPrivate(userId, eventId);
   }
 
   @PatchMapping("/{eventId}")
   @ResponseStatus(HttpStatus.OK)
-  public EventFullDto patchEventByPrivate(
-    @PathVariable Long userId,
-    @PathVariable Long eventId,
-    @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+  public EventFullDto patchEventByPrivate(@PathVariable Long userId,
+                                          @PathVariable Long eventId,
+                                          @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
     return eventService.patchEventByPrivate(userId, eventId, updateEventUserRequest);
   }
 
   @GetMapping("/{eventId}/requests")
   @ResponseStatus(HttpStatus.OK)
-  public List<ParticipationRequestDto> getEventRequestsByEventOwner(
-    @PathVariable Long userId,
-    @PathVariable Long eventId) {
+  public List<ParticipationRequestDto> getEventRequestsByEventOwner(@PathVariable Long userId,
+                                                                    @PathVariable Long eventId) {
     return requestService.getEventRequestsByEventOwner(userId, eventId);
   }
 
   @PatchMapping("/{eventId}/requests")
   @ResponseStatus(HttpStatus.OK)
-  public EventRequestStatusUpdateResult patchEventRequestsByEventOwner(
-    @PathVariable Long userId,
-    @PathVariable Long eventId,
-    @Valid @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+  public EventRequestStatusUpdateResult patchEventRequestsByEventOwner(@PathVariable Long userId,
+                                                                       @PathVariable Long eventId,
+                                                                       @Valid @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
     return requestService.patchEventRequestsByEventOwner(userId, eventId, eventRequestStatusUpdateRequest);
   }
 }

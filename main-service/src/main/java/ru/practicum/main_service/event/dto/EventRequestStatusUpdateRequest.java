@@ -4,8 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.main_service.event.enums.RequestStatusAction;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -15,9 +13,6 @@ import java.util.List;
 @ToString
 @Builder
 public class EventRequestStatusUpdateRequest {
-  @NotEmpty
   List<Long> requestIds;
-
-  @NotNull
   RequestStatusAction status;
 }

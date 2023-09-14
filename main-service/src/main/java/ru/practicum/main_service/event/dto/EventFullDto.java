@@ -8,6 +8,8 @@ import ru.practicum.main_service.category.dto.CategoryDto;
 import ru.practicum.main_service.event.enums.EventState;
 import ru.practicum.main_service.user.dto.UserShortDto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -16,8 +18,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class EventFullDto {
+  @NotBlank
   String annotation;
+
+  @NotNull
   CategoryDto category;
+
   Long confirmedRequests;
 
   @JsonFormat(pattern = MainCommonUtils.DT_FORMAT, shape = JsonFormat.Shape.STRING)
@@ -25,12 +31,19 @@ public class EventFullDto {
 
   String description;
 
+  @NotNull
   @JsonFormat(pattern = MainCommonUtils.DT_FORMAT, shape = JsonFormat.Shape.STRING)
   LocalDateTime eventDate;
 
   Long id;
+
+  @NotNull
   UserShortDto initiator;
+
+  @NotNull
   LocationDto location;
+
+  @NotNull
   Boolean paid;
   Integer participantLimit;
 
@@ -39,6 +52,8 @@ public class EventFullDto {
 
   Boolean requestModeration;
   EventState state;
+
+  @NotBlank
   String title;
   Long views;
 }

@@ -23,17 +23,19 @@ public class CategoryServiceImpl implements CategoryService {
   private final CategoryRepository categoryRepository;
   private final CategoryMapper categoryMapper;
 
+  private final String message = "Category not found";
+
   @Override
   @Transactional
   public CategoryDto create(NewCategoryDto newCategoryDto) {
-    log.info("Добавление новой категории {}", newCategoryDto);
+    log.info("Add new category {}", newCategoryDto);
 
     return categoryMapper.toCategoryDto(categoryRepository.save(categoryMapper.newCategoryDtoToCategory(newCategoryDto)));
   }
 
   @Override
   public List<CategoryDto> getAll(Pageable pageable) {
-    log.info("Вывод всех категорий с пагинацией {}", pageable);
+    log.info("Get all categories with pagination {}", pageable);
 
     return categoryRepository.findAll(pageable).stream()
       .map(categoryMapper::toCategoryDto)
@@ -42,10 +44,14 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public CategoryDto getById(Long catId) {
-    log.info("Вывод категории с id {}", catId);
+    log.info("Get category by id {}", catId);
 
     Category category = categoryRepository.findById(catId)
-      .orElseThrow(() -> new NotFoundException("Категории с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error(message);
+
+        return new NotFoundException(message);
+      });
 
     return categoryMapper.toCategoryDto(category);
   }
@@ -53,22 +59,30 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   @Transactional
   public CategoryDto patch(Long catId, CategoryDto categoryDto) {
-    log.info("Обновление категории с id {} новыми параметрами {}", catId, categoryDto);
+    log.info("Update category id: {}, updated fields: {}", catId, categoryDto);
 
-    categoryRepository.findById(catId)
-      .orElseThrow(() -> new NotFoundException("Категории с таким id не существует."));
+    Category category = categoryRepository.findById(catId)
+      .orElseThrow(() -> {
+        log.error(message);
 
-    categoryDto.setId(catId);
-    return categoryMapper.toCategoryDto(categoryRepository.save(categoryMapper.categoryDtoToCategory(categoryDto)));
+        return new NotFoundException(message);
+      });
+
+    category.setName(categoryDto.getName());
+    return categoryMapper.toCategoryDto(category);
   }
 
   @Override
   @Transactional
   public void deleteById(Long catId) {
-    log.info("Удаление категории с id {}", catId);
+    log.info("Remove category id {}", catId);
 
     categoryRepository.findById(catId)
-      .orElseThrow(() -> new NotFoundException("Категории с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error(message);
+
+        return new NotFoundException(message);
+      });
 
     categoryRepository.deleteById(catId);
   }
@@ -78,6 +92,10 @@ public class CategoryServiceImpl implements CategoryService {
     log.info("Вывод категории с id {}", catId);
 
     return categoryRepository.findById(catId)
-      .orElseThrow(() -> new NotFoundException("Категории с таким id не существует."));
+      .orElseThrow(() -> {
+        log.error(message);
+
+        return new NotFoundException(message);
+      });
   }
 }
