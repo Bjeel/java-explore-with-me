@@ -8,10 +8,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.stats_common.CommonUtils;
+import ru.practicum.stats_common.StatsCommonUtils;
 import ru.practicum.stats_common.model.EndpointHit;
 import ru.practicum.stats_common.model.ViewStats;
-
 import ru.practicum.stats_server.mapper.StatsMapperImpl;
 import ru.practicum.stats_server.model.Stats;
 import ru.practicum.stats_server.repository.StatsRepository;
@@ -22,7 +21,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class StatsServiceImplTest {
@@ -78,7 +79,7 @@ public class StatsServiceImplTest {
       assertEquals(endpointHit.getApp(), savedStats.getApp());
       assertEquals(endpointHit.getUri(), savedStats.getUri());
       assertEquals(endpointHit.getIp(), savedStats.getIp());
-      assertEquals(LocalDateTime.parse(endpointHit.getTimestamp(), CommonUtils.DT_FORMATTER), savedStats.getTimestamp());
+      assertEquals(LocalDateTime.parse(endpointHit.getTimestamp(), StatsCommonUtils.DT_FORMATTER), savedStats.getTimestamp());
     }
   }
 

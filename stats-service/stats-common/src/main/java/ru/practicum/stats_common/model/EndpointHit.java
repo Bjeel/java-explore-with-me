@@ -7,8 +7,9 @@ import javax.validation.constraints.NotBlank;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-@Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class EndpointHit {
   @NotBlank
   String app;
