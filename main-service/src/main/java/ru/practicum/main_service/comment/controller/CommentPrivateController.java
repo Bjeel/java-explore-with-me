@@ -50,8 +50,8 @@ public class CommentPrivateController {
   public List<CommentDto> getCommentsByPrivate(
     @PathVariable Long userId,
     @RequestParam(required = false) Long eventId,
-    @RequestParam(required = false, defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
-    @RequestParam(required = false, defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
+    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+    @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
     return commentService.getCommentsByPrivate(userId, eventId, PageRequest.of(from / size, size));
   }
 }

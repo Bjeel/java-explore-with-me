@@ -206,6 +206,7 @@ public class CommentServiceTest {
     @Test
     public void shouldGet() {
       when(commentRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(comment1, comment2, comment3)));
+      when(commentMapper.toCommentDtoList(anyList())).thenCallRealMethod();
 
       List<CommentDto> commentsFromService = commentService.getCommentsByAdmin(pageable);
 
@@ -247,6 +248,7 @@ public class CommentServiceTest {
     public void shouldGetIfEventNotNull() {
       when(commentRepository.findAllByAuthorIdAndEventId(user1.getId(), event1.getId()))
         .thenReturn(List.of(comment1, comment2));
+      when(commentMapper.toCommentDtoList(anyList())).thenCallRealMethod();
 
       List<CommentDto> commentsFromService = commentService.getCommentsByPrivate(user1.getId(), event1.getId(),
         pageable);
@@ -282,6 +284,7 @@ public class CommentServiceTest {
     @Test
     public void shouldGetIfEventIsNull() {
       when(commentRepository.findAllByAuthorId(user1.getId())).thenReturn(List.of(comment1, comment2, comment3));
+      when(commentMapper.toCommentDtoList(anyList())).thenCallRealMethod();
 
       List<CommentDto> commentsFromService = commentService.getCommentsByPrivate(user1.getId(), null,
         pageable);
@@ -426,6 +429,7 @@ public class CommentServiceTest {
     @Test
     public void shouldGet() {
       when(commentRepository.findAllByEventId(event1.getId(), pageable)).thenReturn(List.of(comment1, comment2, comment3));
+      when(commentMapper.toCommentDtoList(anyList())).thenCallRealMethod();
 
       List<CommentDto> commentsFromService = commentService.getCommentsByPublic(event1.getId(), pageable);
 

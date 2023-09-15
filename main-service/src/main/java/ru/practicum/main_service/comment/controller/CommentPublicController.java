@@ -23,8 +23,8 @@ public class CommentPublicController {
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<CommentDto> getCommentsByPublic(@RequestParam Long eventId,
-                                              @RequestParam(required = false, defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
-                                              @RequestParam(required = false, defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
+                                              @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                              @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
     return commentService.getCommentsByPublic(eventId, PageRequest.of(from / size, size));
   }
 

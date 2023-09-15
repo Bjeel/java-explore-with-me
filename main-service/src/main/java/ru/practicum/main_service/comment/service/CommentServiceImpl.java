@@ -21,7 +21,6 @@ import ru.practicum.main_service.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
   public List<CommentDto> getCommentsByAdmin(Pageable pageable) {
     log.info("Get all comments with pagination {}", pageable);
 
-    return toCommentsDto(commentRepository.findAll(pageable).toList());
+    return commentMapper.toCommentDtoList(commentRepository.findAll(pageable).toList());
   }
 
   @Override
@@ -64,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
       comments = commentRepository.findAllByAuthorId(userId);
     }
 
-    return toCommentsDto(comments);
+    return commentMapper.toCommentDtoList(comments);
   }
 
   @Override
@@ -126,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
 
     eventService.getEventById(eventId);
 
-    return toCommentsDto(commentRepository.findAllByEventId(eventId, pageable));
+    return commentMapper.toCommentDtoList(commentRepository.findAllByEventId(eventId, pageable));
   }
 
   @Override
@@ -134,12 +133,6 @@ public class CommentServiceImpl implements CommentService {
     log.info("Get comment с id {}", commentId);
 
     return commentMapper.toCommentDto(getCommentById(commentId));
-  }
-
-  private List<CommentDto> toCommentsDto(List<Comment> comments) {
-    return comments.stream()
-      .map(commentMapper::toCommentDto)
-      .collect(Collectors.toList());
   }
 
   private Comment getCommentById(Long commentId) {

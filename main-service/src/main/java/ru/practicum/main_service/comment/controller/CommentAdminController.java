@@ -22,8 +22,8 @@ public class CommentAdminController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<CommentDto> getCommentsByAdmin(@RequestParam(required = false, defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
-                                             @RequestParam(required = false, defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
+  public List<CommentDto> getCommentsByAdmin(@RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_FROM) @PositiveOrZero Integer from,
+                                             @RequestParam(defaultValue = MainCommonUtils.PAGE_DEFAULT_SIZE) @Positive Integer size) {
     return commentService.getCommentsByAdmin(PageRequest.of(from / size, size));
   }
 

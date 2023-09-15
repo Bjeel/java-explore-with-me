@@ -6,8 +6,12 @@ import ru.practicum.main_service.comment.dto.CommentDto;
 import ru.practicum.main_service.comment.model.Comment;
 import ru.practicum.main_service.user.mapper.UserMapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface CommentMapper {
   @Mapping(target = "eventId", expression = "java(comment.getEvent().getId())")
   CommentDto toCommentDto(Comment comment);
+
+  List<CommentDto> toCommentDtoList(List<Comment> comments);
 }
