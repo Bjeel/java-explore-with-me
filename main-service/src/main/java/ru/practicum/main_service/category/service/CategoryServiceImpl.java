@@ -49,7 +49,6 @@ public class CategoryServiceImpl implements CategoryService {
     Category category = categoryRepository.findById(catId)
       .orElseThrow(() -> {
         log.error(message);
-
         return new NotFoundException(message);
       });
 
@@ -64,7 +63,6 @@ public class CategoryServiceImpl implements CategoryService {
     Category category = categoryRepository.findById(catId)
       .orElseThrow(() -> {
         log.error(message);
-
         return new NotFoundException(message);
       });
 
@@ -80,7 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
     categoryRepository.findById(catId)
       .orElseThrow(() -> {
         log.error(message);
-
         return new NotFoundException(message);
       });
 
@@ -94,7 +91,6 @@ public class CategoryServiceImpl implements CategoryService {
     return categoryRepository.findById(catId)
       .orElseThrow(() -> {
         log.error(message);
-
         return new NotFoundException(message);
       });
   }
